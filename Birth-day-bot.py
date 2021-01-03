@@ -25,6 +25,7 @@ def authenticate():
     lb.pack()
     root.update_idletasks()
     root.update()
+    sf.yview_moveto(1)
     reddit = praw.Reddit("Birth-Day-Bot", user_agent="Birthday Bot v1.0")
     return reddit
 
@@ -32,6 +33,7 @@ def authenticate():
 def hide_all_frames():
     for widget in frame.winfo_children():
         widget.destroy()
+    sf.scroll_to_top()
 
 
 def main():
@@ -46,7 +48,6 @@ def main():
 
 def run_bot(reddit, congratulated_users):
     current_date = datetime.datetime.today().strftime('%y/%m/%d')
-
     print("Getting comments...")
     lb = tk.Label(text='Getting comments...',
                   fg='#3f0052',
@@ -61,7 +62,8 @@ def run_bot(reddit, congratulated_users):
     lb.pack()
     root.update_idletasks()
     root.update()
-    for comment in reddit.subreddit("RandomKindness+happy").comments(limit=200):
+    sf.yview_moveto(1)
+    for comment in reddit.subreddit("happy+UpliftingNews").comments(limit=200):
 
         account_created_date = datetime.datetime.fromtimestamp(int(comment.author.created)).strftime('%y/%m/%d')
 
@@ -79,25 +81,30 @@ def run_bot(reddit, congratulated_users):
         lb.pack()
         root.update_idletasks()
         root.update()
+        sf.yview_moveto(1)
         if current_date != account_created_date \
                 and current_date[3:] == account_created_date[3:] \
                 and comment.author not in congratulated_users:
-            print("Cake day found!")
-            lb = tk.Label(text='Cake day found!',
-                          fg='#77E6AB',
-                          bg='#d7d5f7',
-                          wraplength=400,
-                          master=frame,
-                          font="-size 9",
-                          anchor="w",
-                          justify='left',
-                          padx='4',
-                          pady='4')
-            lb.pack()
-            root.update_idletasks()
-            root.update()
-            comment.reply(random.choice(REPLY_MESSAGES).format(comment.author)).clear_vote()
+            try:
+                comment.reply(random.choice(REPLY_MESSAGES).format(comment.author)).clear_vote()
+                print("Cake day found!")
+                lb = tk.Label(text='Cake day found!',
+                              fg='#77E6AB',
+                              bg='#d7d5f7',
+                              wraplength=400,
+                              master=frame,
+                              font="-size 9",
+                              anchor="w",
+                              justify='left',
+                              padx='4',
+                              pady='4')
+                lb.pack()
+                root.update_idletasks()
+                root.update()
+                sf.yview_moveto(1)
 
+            except Exception as e:
+                print(e)
             congratulated_users.append(comment.author)
             with open("congratulated_users.txt", "a") as file:
                 file.write("{}\n".format(comment.author.name))
@@ -123,7 +130,7 @@ def remove_downvoted_comments(reddit):
     lb.pack()
     root.update_idletasks()
     root.update()
-
+    sf.yview_moveto(1)
     for comment in reddit.redditor("Birth-Day-Bot").comments.new(limit=20):
         print("Comment Score: {}".format(comment.score))
         lb = tk.Label(text='Comment Score: {}'.format(comment.score),
@@ -139,6 +146,7 @@ def remove_downvoted_comments(reddit):
         lb.pack()
         root.update_idletasks()
         root.update()
+        sf.yview_moveto(1)
         if comment.score <= 0:
             print("Deleting comment...")
             lb = tk.Label(text='Deleting comment...',
@@ -154,6 +162,7 @@ def remove_downvoted_comments(reddit):
             lb.pack()
             root.update_idletasks()
             root.update()
+            sf.yview_moveto(1)
             comment.delete()
 
 
