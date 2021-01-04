@@ -1,1 +1,1 @@
-A bot that congratulates commenters on their reddit account birthday.
+A bot that wishes commenters a happy birthday on their reddit account birthday.
